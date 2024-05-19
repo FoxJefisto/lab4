@@ -1,5 +1,9 @@
 module Main where
 import Data.Matrix
+import Control.Parallel.Strategies
+import System.Clock
+import Control.DeepSeq
+import System.Environment
 
 -- | Split a matrix into four quadrants
 splitMatrix :: Matrix Int -> (Matrix Int, Matrix Int, Matrix Int, Matrix Int)
@@ -23,21 +27,44 @@ strassen a b
         (a11, a12, a21, a22) = splitMatrix a
         (b11, b12, b21, b22) = splitMatrix b
 
-        p1 = strassen (a11 + a22) (b11 + b22)
-        p2 = strassen (a21 + a22) b11
-        p3 = strassen a11 (b12 - b22)
-        p4 = strassen a22 (b21 - b11)
-        p5 = strassen (a11 + a12) b22
-        p6 = strassen (a21 - a11) (b11 + b12)
-        p7 = strassen (a12 - a22) (b21 + b22)
-
-        c11 = p1 + p4 - p5 + p7
-        c12 = p3 + p5
-        c21 = p2 + p4
-        c22 = p1 - p2 + p3 + p6
+        (c11, c12, c21, c22) = runEval $ do
+            p1 <- rpar $ strassen (a11 + a22) (b11 + b22)
+            p2 <- rpar $ strassen (a21 + a22) b11
+            p3 <- rpar $ strassen a11 (b12 - b22)
+            p4 <- rpar $ strassen a22 (b21 - b11)
+            p5 <- rpar $ strassen (a11 + a12) b22
+            p6 <- rpar $ strassen (a21 - a11) (b11 + b12)
+            p7 <- rpar $ strassen (a12 - a22) (b21 + b22)
+            rdeepseq p1
+            rdeepseq p2
+            rdeepseq p3
+            rdeepseq p4
+            rdeepseq p5
+            rdeepseq p6
+            rdeepseq p7
+            p11 <- rpar (p1 + p4 - p5 + p7)
+            p12 <- rpar (p3 + p5)
+            p21 <- rpar (p2 + p4)
+            p22 <- rpar (p1 - p2 + p3 + p6)
+            rdeepseq p11
+            rdeepseq p12
+            rdeepseq p21
+            rdeepseq p22
+            return (p11, p12, p21, p22)
 
 main :: IO ()
 main = do
-    let a = matrix 4 4 $ \(i,j) -> 4
-    let b = matrix 4 4 $ \(i,j) -> 4
-    print(strassen a b)
+    args <- getArgs
+    let size = read (args !! 0) :: Int
+
+    timeStart <- getTime Monotonic
+    result <- return $!! (strassen (matrix size size $ \(i,j) -> 4) (matrix size size $ \(i,j) -> 4))
+    timeEnd <- getTime Monotonic
+
+    let timeRun = timeEnd - timeStart
+    let seconds = sec timeRun
+    let milliseconds = (nsec timeRun) `div` 1000000
+    print $ "Time run: " ++ show seconds ++ "." ++ show milliseconds
+
+    -- print result
+    return ()

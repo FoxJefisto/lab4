@@ -70,6 +70,8 @@ executable Haskell
     build-depends:  base ^>=4.17.2.1,
                     matrix,
                     parallel,
+                    clock,
+                    deepseq,
 
     -- Directories containing source files.
     hs-source-dirs:   app

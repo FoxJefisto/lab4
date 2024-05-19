@@ -20,6 +20,16 @@
   (major1) == 4 && (major2) <  17 || \
   (major1) == 4 && (major2) == 17 && (minor) <= 2)
 #endif /* MIN_VERSION_base */
+/* package clock-0.8.4 */
+#ifndef VERSION_clock
+#define VERSION_clock "0.8.4"
+#endif /* VERSION_clock */
+#ifndef MIN_VERSION_clock
+#define MIN_VERSION_clock(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  8 || \
+  (major1) == 0 && (major2) == 8 && (minor) <= 4)
+#endif /* MIN_VERSION_clock */
 /* package matrix-0.3.6.3 */
 #ifndef VERSION_matrix
 #define VERSION_matrix "0.3.6.3"
@@ -30,6 +40,16 @@
   (major1) == 0 && (major2) <  3 || \
   (major1) == 0 && (major2) == 3 && (minor) <= 6)
 #endif /* MIN_VERSION_matrix */
+/* package parallel-3.2.2.0 */
+#ifndef VERSION_parallel
+#define VERSION_parallel "3.2.2.0"
+#endif /* VERSION_parallel */
+#ifndef MIN_VERSION_parallel
+#define MIN_VERSION_parallel(major1,major2,minor) (\
+  (major1) <  3 || \
+  (major1) == 3 && (major2) <  2 || \
+  (major1) == 3 && (major2) == 2 && (minor) <= 2)
+#endif /* MIN_VERSION_parallel */
 
 /* tool gcc-14.0.6 */
 #ifndef TOOL_VERSION_gcc
