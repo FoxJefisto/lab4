@@ -52,6 +52,9 @@ strassen a b
             rdeepseq p22
             return (p11, p12, p21, p22)
 
+writeMatrixToFile :: FilePath -> Matrix Int -> IO ()
+writeMatrixToFile filePath matrix = writeFile filePath $ prettyMatrix matrix
+
 main :: IO ()
 main = do
     args <- getArgs
@@ -66,5 +69,5 @@ main = do
     let milliseconds = (nsec timeRun) `div` 1000000
     print $ "Time run: " ++ show seconds ++ "." ++ show milliseconds
 
-    -- print result
+    writeMatrixToFile "result.txt" result
     return ()
